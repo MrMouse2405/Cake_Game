@@ -2,8 +2,8 @@
 
 This file will tell you where to look and to look for what code.
 
-Server: src/server/GameComponents
-Client: src/client
+- Server: src/server/GameComponents
+- Client: src/client
 
 ## Game Components
 
