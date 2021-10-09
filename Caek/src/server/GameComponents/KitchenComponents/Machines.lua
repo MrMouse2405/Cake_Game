@@ -38,7 +38,7 @@ local function PlayerExist(Player)
         return true
     end
 
-    createNewPlayer(Player):Notify(Messages.GameJoined)
+    createNewPlayer(Player):Notify("Notify",Messages.GameJoined)
 
     return nil
 end
@@ -49,9 +49,7 @@ function Machines.Order(prompt : ProximityPrompt)
     table.insert(Events,prompt.Triggered:Connect(function(Player)
 
         --If player doesnt exist, then return
-        if not PlayerExist(Player) then
-            return
-        end
+        PlayerExist(Player)
 
 
         Player = PlayerManager:FindPlayer(Player)
@@ -59,22 +57,20 @@ function Machines.Order(prompt : ProximityPrompt)
 
         --If player doesnt have tray, then return
         if not Player:HasTray() then
-            Player:Notify(Messages.NoTrayError)
+            Player:Notify("Notify",Messages.NoTrayError)
             return
         end
     
 
         --If order is recieved, then return
         if Player:HasRecievedOrder() then
-            Player:Notify(Messages.OrderExistingError)
+            Player:Notify("Notify",Messages.OrderExistingError)
             return
         end
 
         --//TODO: Give Player an order
-
-        Player:GiveOrder(true)
-        Player:Notify(Messages.OrderRecieved)
-
+        Player:GiveOrder(OrderSystem:GetOrder())
+        Player:Notify("Notify",Messages.OrderRecieved)
     end))
 
 end
@@ -85,9 +81,7 @@ function Machines.Tray(prompt : ProximityPrompt)
     table.insert(Events,prompt.Triggered:Connect(function(Player)
       
         
-        if not PlayerExist(Player) then
-            return
-        end
+        PlayerExist(Player)
 
 
         Player = PlayerManager:FindPlayer(Player)
@@ -95,13 +89,13 @@ function Machines.Tray(prompt : ProximityPrompt)
 
         --If Player Has Tray, then return
         if Player:HasTray() then
-            Player:Notify(Messages.TrayExistingError)
+            Player:Notify("Notify",Messages.TrayExistingError)
             return
         end
 
         --Give Tray
         Player:GiveTray(Tray.new())
-        Player:Notify(Messages.TrayRecieved)
+        Player:Notify("Notify",Messages.TrayRecieved)
         
     end))
 
@@ -119,17 +113,17 @@ function Machines.Bases(prompt : ProximityPrompt)
         Player = PlayerManager:FindPlayer(Player)
 
         if not Player:HasTray() then
-            Player:Notify(Messages.NoTrayError)
+            Player:Notify("Notify",Messages.NoTrayError)
             return
         end
 
         if not Player:GetTray():IsEquipped() then
-            Player:Notify(Messages.TrayUnequippedError)
+            Player:Notify("Notify",Messages.TrayUnequippedError)
             return
         end
 
         if Player:HasCake() and Player:GetCake():HasBase() then
-            Player:Notify(Messages.BaseExistingError)
+            Player:Notify("Notify",Messages.BaseExistingError)
             return
         end
 
@@ -167,7 +161,7 @@ function Machines.Bases(prompt : ProximityPrompt)
         --//Parenting Cake
         Player:GetCake():GetModel().Parent = Player:GetTray():GetTool()
 
-        Player:Notify(Messages.BaseAdded)
+        Player:Notify("Notify",Messages.BaseAdded)
 
 
     end))
@@ -186,27 +180,27 @@ function Machines.Oven(prompt : ProximityPrompt)
         Player = PlayerManager:FindPlayer(Player)
 
         if not Player:HasCake() then
-            Player:Notify(Messages.NoCakeError)
+            Player:Notify("Notify",Messages.NoCakeError)
             return
         end
 
         if not Player:GetCake():HasBase() then
-            Player:Notify(Messages.NoCakeBaseError)
+            Player:Notify("Notify",Messages.NoCakeBaseError)
             return
         end
 
         if Player:HasBakedCake() then
-            Player:Notify(Messages.CakeBakedError)
+            Player:Notify("Notify",Messages.CakeBakedError)
             return
         end
 
         if not Player:GetTray():IsEquipped() then
-            Player:Notify(Messages.TrayUnequippedError)
+            Player:Notify("Notify",Messages.TrayUnequippedError)
             return
         end
 
         Player:BakeCake()
-        Player:Notify(Messages.CakeBaked)
+        Player:Notify("Notify",Messages.CakeBaked)
 
     end))
 
@@ -224,34 +218,34 @@ function Machines.Icing(prompt : ProximityPrompt)
         Player = PlayerManager:FindPlayer(Player)
 
         if not Player:HasCake() then
-           Player:Notify(Messages.NoCakeError)
+           Player:Notify("Notify",Messages.NoCakeError)
            return
         end
 
         if not Player:GetCake():HasBase() then
-            Player:Notify(Messages.NoCakeBaseError)
+            Player:Notify("Notify",Messages.NoCakeBaseError)
             return
         end
 
         if not Player:HasBakedCake() then
-            Player:Notify(Messages.CakeUnbakedError)
+            Player:Notify("Notify",Messages.CakeUnbakedError)
             return
         end
 
         if not Player:GetCake():CanApplyIcing() then
-            Player:Notify(Messages.IcingExistingError)
+            Player:Notify("Notify",Messages.IcingExistingError)
             return
         end
 
         if not Player:GetTray():IsEquipped() then
-            Player:Notify(Messages.TrayUnequippedError)
+            Player:Notify("Notify",Messages.TrayUnequippedError)
             return
         end
 
         Player:GetCake():ApplyIcing(CakeEnums.Icings[Player:GetCake()().Name])
         Player:GetCake():ApplyIcingColour(CakeEnums.IcingColour[Player.IcingColour])
 
-        Player:Notify(Messages.IcingApplied)
+        Player:Notify("Notify",Messages.IcingApplied)
 
     end))
     
@@ -269,34 +263,34 @@ function Machines.IcingToppings(prompt : ProximityPrompt)
         Player = PlayerManager:FindPlayer(Player)
 
         if not Player:HasCake() then
-            Player:Notify(Messages.NoCakeError)
+            Player:Notify("Notify",Messages.NoCakeError)
             return
         end
 
         if not Player:GetCake():HasBase() then
-            Player:Notify(Messages.NoCakeBaseError)
+            Player:Notify("Notify",Messages.NoCakeBaseError)
             return
         end
 
         if Player:GetCake():CanApplyIcing() then
-            Player:Notify(Messages.NoIcingError)
+            Player:Notify("Notify",Messages.NoIcingError)
             return
         end
 
         if not Player:GetCake():CanApplyIcingToppings() then
-            Player:Notify(Messages.IcingToppingsExistingError)
+            Player:Notify("Notify",Messages.IcingToppingsExistingError)
             return
         end
 
         if not Player:GetTray():IsEquipped() then
-            Player:Notify(Messages.TrayUnequippedError)
+            Player:Notify("Notify",Messages.TrayUnequippedError)
             return
         end
 
         Player:GetCake():ApplyIcingToppings(CakeEnums.IcingToppings[Player:GetCake()().Name])
         Player:GetCake():ApplyIcingToppingsFlavour(CakeEnums.BaseFlavours[Player.IcingToppingsFlavour])
 
-        Player:Notify(Messages.IcingToppingsAdded)
+        Player:Notify("Notify",Messages.IcingToppingsAdded)
     end))
 
 end
@@ -313,34 +307,34 @@ function Machines.Sprinkles(prompt : ProximityPrompt)
         Player = PlayerManager:FindPlayer(Player)
 
         if not Player:HasCake() then
-            Player:Notify(Messages.NoCakeError)
+            Player:Notify("Notify",Messages.NoCakeError)
             return
         end
  
         
         if not Player:GetCake():HasBase() then
-            Player:Notify(Messages.NoCakeBaseError)
+            Player:Notify("Notify",Messages.NoCakeBaseError)
             return
         end
 
         if Player:GetCake():CanApplyIcing() then
-            Player:Notify(Messages.NoIcingError)
+            Player:Notify("Notify",Messages.NoIcingError)
             return
         end
         
         if not Player:GetCake():CanApplySprinkles() then
-            Player:Notify(Messages.SprinklesExistingError)
+            Player:Notify("Notify",Messages.SprinklesExistingError)
         end
         
         if not Player:GetTray():IsEquipped() then
-            Player:Notify(Messages.TrayUnequippedError)
+            Player:Notify("Notify",Messages.TrayUnequippedError)
             return
         end
 
 
 
         Player:GetCake():ApplySprinkles(CakeEnums.Sprinkles[Player:GetCake()().Name][string.split(prompt.Parent.Parent.Name,":")[2]])
-        Player:Notify(Messages.SprinklesAdded)
+        Player:Notify("Notify",Messages.SprinklesAdded)
 
 
     end))
@@ -359,40 +353,40 @@ function Machines.Toppings(prompt : ProximityPrompt)
         Player = PlayerManager:FindPlayer(Player)
 
         if not Player:HasCake() then
-            Player:Notify(Messages.NoCakeError)
+            Player:Notify("Notify",Messages.NoCakeError)
             return
         end
  
         
         if not Player:GetCake():HasBase() then
-            Player:Notify(Messages.NoCakeBaseError)
+            Player:Notify("Notify",Messages.NoCakeBaseError)
             return
         end
 
         if Player:GetCake():CanApplyIcing() then
-            Player:Notify(Messages.NoIcingError)
+            Player:Notify("Notify",Messages.NoIcingError)
             return
         end
 
         
         if not Player:GetTray():IsEquipped() then
-            Player:Notify(Messages.TrayUnequippedError)
+            Player:Notify("Notify",Messages.TrayUnequippedError)
             return
         end
 
         if not Player:GetCake():CanApplyCakeToppings() then
-            Player:Notify(Messages.ToppingsExistingError)
+            Player:Notify("Notify",Messages.ToppingsExistingError)
             return
         end
 
         Player:GetCake():ApplyCakeToppings(CakeEnums.CakeToppings[string.split(prompt.Parent.Parent.Name,":")[2]])
-        Player:Notify(Messages.ToppingsAdded)
+        Player:Notify("Notify",Messages.ToppingsAdded)
 
     end))
 
 end
 
---Function for Flavour Selector -- TODO Make Selector Object
+--Function for Flavour Selector
 local SelectorTable = {}
 
 
@@ -417,12 +411,20 @@ function Machines.Selector(prompt : ProximityPrompt)
 
         Player = PlayerManager:FindPlayer(Player)
         local SelectorName = string.split(prompt.Parent.Parent.Name,":")[2]
+        local SelectorIndex = prompt.Parent.Parent.Parent.Name:split(":")[1]
+
+        local FlavourIndex, ChosenFlavour = SelectorTable[SelectorName]:ChangeFlavour(Player)
+
+        --[[
+                string.format(
+                    Messages[SelectorName.."Selected"],
+                    ChosenFlavour
+                ),
+        ]]
 
         Player:Notify(
-            string.format(
-                Messages[SelectorName.."Selected"],
-                SelectorTable[SelectorName]:ChangeFlavour(Player)
-            )
+            "Selector", -- Key
+            ""..tostring(SelectorIndex)..tostring(FlavourIndex+1)
         )
 
         
