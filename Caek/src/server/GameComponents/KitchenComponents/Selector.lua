@@ -15,26 +15,15 @@ function Selector.new(Model,Flavours,SelectorName)
     return self
 end
 
---Utils
-local function findn(Table, number)
-    local count = 1
-    for _,x in pairs(Table) do
-        if count == number then
-            return x
-        end
-        count += 1;
-    end
-end
-
 
 function Selector:ChangeFlavour(Player)
     
     local CurrentFlavourIndex
+    local Children = self.Model:GetChildren()
 
-    for _,x in pairs(self.Model:GetChildren()) do
-        
+    for _,x in pairs(Children) do
         if string.sub(x.Name,3) == Player[self.SelectorName]then
-            CurrentFlavourIndex = tonumber(string.sub(x.Name,0,1))
+            CurrentFlavourIndex = tonumber(x.Name:sub(1,1))
             if CurrentFlavourIndex == 9 then
                 CurrentFlavourIndex = 0
             end
@@ -42,13 +31,13 @@ function Selector:ChangeFlavour(Player)
         end
     end
 
-    for _,x in pairs(self.Model:GetChildren()) do
+    for _,x in pairs(Children) do
         if string.sub(x.Name,0,1) == tostring(CurrentFlavourIndex + 1) then
             Player[self.SelectorName] = string.sub(x.Name,3)
         end
     end
 
-    return Player[self.SelectorName]
+    return CurrentFlavourIndex,Player[self.SelectorName]
 end
 
 return Selector
