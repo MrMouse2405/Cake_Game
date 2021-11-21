@@ -9,7 +9,8 @@
 -- Caching --------------------------------
 -- NetworkService
 local NetworkService = require(script.Parent:FindFirstChild("NetworkModule"))
--- Cake Displayer Table.
+-- Cake Displayer
+local OrderDisplayer = require(script.Parent:FindFirstChild("OrderDisplayer"))
 
 
 -- CakeUI
@@ -63,6 +64,11 @@ end)
 -- Notifications ---------------------------
 local Queue = {}
 
+-- To avoid printing messages for ever lol. 
+local function IsQueSizeMax()
+    return #Queue > 2
+end 
+
 local function IsQueEmpty()
     return #Queue == 0
 end
@@ -96,18 +102,36 @@ local function RunWhileQueueIsNotEmpty()
     Running = false
 end
 
+local processing = false
 
 NetworkService:BindToServerMessage("Notify",function(Data)
-   
-    print(Data)
-   
-    table.insert(Queue,Data)
-    print(IsQueEmpty())
 
+    -- waiting until last notification request was processed
+    repeat 
+        task.wait()
+    until not processing
+
+    processing = true
+
+    -- If Que size limit is reached, then drop the request
+    -- this is to avoid sending notifications forever,
+    -- cuz sometimes players can get floaded by notifications.
+    if IsQueSizeMax() then
+        processing = false
+        return
+    end
+
+    -- Insert into que
+    table.insert(Queue,Data)
+
+    -- Check if Que is empty, if it isnt, then check if thread running,
+    -- if thread isnt running or if its dead, then make new one and run it.
     if not IsQueEmpty() and not Running then
         print("Spawned")
         task.spawn(RunWhileQueueIsNotEmpty)
     end
+
+    processing = false
 
 end)
 
@@ -127,4 +151,5 @@ NetworkService:BindToServerMessage("Cake",function(Data)
 end)
 
 return function()
+
 end

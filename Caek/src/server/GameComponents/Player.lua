@@ -146,33 +146,19 @@ end
 
 --New Cake
 function Player:Reset()
-    self.DisplayCake:Destroy()
-    self.Cake:Destroy()
-    self.Tray:Destroy()
+    self.DisplayCake:Delete()
+    self.Cake:Delete()
+    self.Tray:Delete()
 end
 
 --Deleting Player
 function Player:Delete()
 
-    --//Removing Order
+    self:Reset()
+
     self.Order = nil
 
-    --//Removing Cake
-    if self.Cake and self.Cake:GetModel() then
-        self.Cake:GetModel():Destroy()
-    end
-
-    --//Removing Tray
-    if self.Tray and self.Tray:GetTool() then
-        self.Tray:GetTool():Destroy()
-    end
-
-    --//Removing CLient
-    if self.Client then
-        self.Client:Destroy()
-    end
-    
-    --self.DisplayCake:Destroy()
+    setmetatable(self,{__mode = "kv"})
     self = nil
 end
 

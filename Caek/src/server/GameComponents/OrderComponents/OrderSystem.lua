@@ -7,33 +7,50 @@
 
 
 --Modules
-local Order     = require(script.Parent:FindFirstChild("Order")).new()
-local Displayer = require(script.Parent:FindFirstChild("OrderDisplayer"))
+local OrderSystem       = require(script.Parent:FindFirstChild("Order")).new()
 
+-- Order Folder
+local DisplayerFolder = Instance.new("Folder")
+DisplayerFolder.Name = "DisplayerFolder"
+DisplayerFolder.Parent = game:GetService("ReplicatedStorage")
 
 --Vars
 local OrderList = {}
+local Orders = 0
 
+local Processing = false
 
 --Functions
-local function AddNewOrder(Order)
-    table.insert(OrderList,Order)
-    --Displayer:AddInList(Order.Cake:GetModel())
-    --Displayer:RefreshDisplays()
+local function AddNewOrder(order)
+    repeat
+        task.wait(1)
+    until not Processing
+
+    Processing = true
+
+    Orders = Orders + 1
+    table.insert(OrderList,order)
+    local DisplayCake = OrderSystem:GetCakeFromOrderSheet(order)
+    DisplayCake.Name = tostring(Orders)
+    DisplayCake.Parent = DisplayerFolder
+
+    Processing = false
 end
 
 local function RemoveOrder()
-    local order = OrderList[1]
-    table.remove(OrderList,1)
-    --Displayer:RemoveInList(order.Cake)
-    return Order:GetClientEncodedData(order)
+    local order = OrderList[Orders]
+    table.remove(OrderList,Orders)
+    Orders = Orders - 1
+    local Data = OrderSystem:GetClientEncodedData(order)
+    return Data
 end
 
 local function ReconcileOrderList()
     while task.wait(math.random(0,10)) do
-        if #OrderList == 8 then return end
+        if Orders == 8 then return end
         math.randomseed(tick())
-        AddNewOrder(Order:CreateNewOrder())
+        AddNewOrder(OrderSystem:CreateNewOrder())
+        task.wait(5)
     end
 end
 
@@ -47,7 +64,6 @@ function OrderSystem.new(displayer)
     local self = {}
     setmetatable(self,OrderSystem)
 
-    --Displayer = Displayer.new(displayer)
 
     coroutine.wrap(ReconcileOrderList)()
 

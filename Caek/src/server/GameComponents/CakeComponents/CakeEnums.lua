@@ -41,7 +41,7 @@ end)
 	CakeEnums.BaseFlavours = {
 	["Chocolate"   ] =  Color3.fromRGB(98,52,18);
 	["Vanilla"     ] =  Color3.fromRGB(243, 229, 171);
-	["Strawberry"  ] =  Color3.fromRGB(212, 44, 170);
+	["Strawberry"  ] =  Color3.fromRGB(252, 146, 215);
 	["Marble"      ] =  Color3.fromRGB(255,255,255);
 	["BlueBerry"   ] =  Color3.fromRGB(79, 134, 247);
 	["RedVelvet"   ] =  Color3.fromRGB(127,42,60);
@@ -54,7 +54,7 @@ end)
 CakeEnums.IcingColour = {
 	["Chocolate"   ] =  Color3.fromRGB(73, 38, 13);
 	["Vanilla"     ] =  Color3.fromRGB(255, 232, 140);
-	["Strawberry"  ] =  Color3.fromRGB(252,15,192);
+	["Strawberry"  ] =  Color3.fromRGB(252, 115, 215);
 	["Marble"      ] =  Color3.fromRGB(245, 241, 241);
 	["BlueBerry"   ] =  Color3.fromRGB(79, 82, 247);
 	["RedVelvet"   ] =  Color3.fromRGB(127, 42, 51);

@@ -281,5 +281,11 @@ function Cake:ApplyCakeToppings(Toppings)
     self.CakeToppings = ApplyToppings(self,Toppings)
 end
 
+--//To delete cake
+function Cake:Delete()
+    self:GetModel():Destroy()
+    setmetatable(self,{__mode = "kv"})
+    self = nil
+end
 
 return Cake

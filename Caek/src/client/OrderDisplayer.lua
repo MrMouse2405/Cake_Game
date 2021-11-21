@@ -7,108 +7,102 @@ function OrderDisplayer:RefreshDisplays()
 
 ]]
 
---Vars
-local PlayerManager
-local GUIs = {}
-
-
---Functions
-local function Display(Screen,Cake)
-    Cake:SetPrimaryPartCFrame(CFrame.new(Vector3.new(0,0,0)))
-    Screen:FindFirstChild("SG"):FindFirstChild("VP"):FindFirstChild("Cam").CFrame = CFrame.lookAt(Vector3.new(5,5,-5),Cake.PrimaryPart.Position)
-    Cake.Parent = Screen:FindFirstChild("SG"):FindFirstChild("VP")
-end
-
-local function GetDisplay(model,n)
-    return model:FindFirstChild("OrderScreen:"..tostring(n))
-end
-
-local function GetFromDisplay(Screen)
-    return Screen:FindFirstChild("SG"):FindFirstChild("VP"):FindFirstChildWhichIsA("Model")
-end
-
---Class For ViewPortFrames
-local Screen = {}
-Screen.__index = Screen
-
-function Screen.new(screen)
-    
-    local self = {}
-    setmetatable(self,Screen)
-
-    --//Creating Our Gui
-    local SG      = Instance.new("SurfaceGui")
-    local VP      = Instance.new("ViewportFrame",SG)
-    local Cam     = Instance.new("Camera",VP)
-    VP.CurrentCamera = Cam
-            
-    SG.Name     = "SG"
-    VP.Name     = "VP"
-    Cam.Name    = "Cam"
-
-    --//Surface GUI Design
-    SG.Face    = Enum.NormalId.Top
-    SG.Adornee = screen
-        
-    --//Viewport Design
-    VP.CurrentCamera = Cam
-
-    VP.Size = UDim2.fromScale(1,1)
-    VP.BackgroundTransparency = 0
-
-    self.Gui      = SG
-    self.ViewPort = VP
-    self.Copies   = {}
-
-    return self
-end
-
-function Screen:RefreshAll()
-    for _,x in pairs(self.Copies) do
-         
-    end   
-end
-
---Class
 local OrderDisplayer = {}
-OrderDisplayer.__index = OrderDisplayer
 
---Constructor
-function OrderDisplayer.new(Model)
+-- Order Screen to display UI.
+local UIs = {}
+local Que = {}
+local ThreadRunning = false
+local Size = 0
+local LastOccupied = 0
+
+-- Folder For Cakes
+local DisplayerFolder = game:GetService("ReplicatedStorage"):WaitForChild("DisplayerFolder")
+
+
+-- Initializing UIs
+do
+
+    local UI
+    local OrderScreens = workspace:WaitForChild("Caek"):WaitForChild("OrderScreen")
     
-    local self = {}
-    setmetatable(self,OrderDisplayer)
+    local PlayerGui = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
 
-    self.Model = Model
-    self.CakeList = {}
-    self.Occupied = 0
+    -- Running 8 Times and creating surfce guis with view port frames, and then setting adornee to the order screen
+    for i = 1,8,1 do
+        
+        local SUI = Instance.new("SurfaceGui")
+        SUI.Face  = Enum.NormalId.Right
+        
+        local VUI = Instance.new("ViewportFrame",SUI)
+        VUI.BackgroundColor3 = Color3.fromRGB(71, 64, 65)
+        VUI.Size = UDim2.fromScale(1,1)
+    
 
-    --//Init
-    for _,x in pairs(Model:GetChildren()) do
-        if string.sub(x.Name,1,11) == "OrderScreen" then
-            table.insert(GUIs,tonumber(x.Name:sub(-1,-1)),Screen.new(x))
-        end
+        local Camera = Instance.new("Camera",VUI)
+        Camera.CFrame = CFrame.new(Vector3.new(-5,5,5),Vector3.new(0,0,0))
+        Camera.FieldOfView = 40
+
+        VUI.CurrentCamera = Camera
+
+        local WorldModel  = Instance.new("WorldModel")
+        WorldModel.Parent = VUI
+
+        SUI.Name   = tostring(i)
+        SUI.Adornee = OrderScreens:WaitForChild("OrderScreen:"..tostring(i))
+
+        SUI.Parent = PlayerGui
+
+        table.insert(UIs,SUI)
+        Size = Size + 1
+    end
+end
+
+local function AddToDisplayer(Cake)
+    local TargetUI = UIs[tonumber(Cake.Name)]
+
+    repeat
+        task.wait(2)
+    until Cake.PrimaryPart
+
+    -- 3.1415926535898 in radians means 180 degrees in angles
+    Cake:SetPrimaryPartCFrame(CFrame.new())-- * CFrame.Angles(3.1415926535898,0,0))   
+    Cake.Parent = TargetUI.ViewportFrame.WorldModel
+end
+
+local function IsQueEmpty()
+    return #Que == 0
+end
+
+local function EmptyQue()
+    ThreadRunning = true
+    while next(Que) do
+        AddToDisplayer(Que[1])
+        table.remove(Que,1)
+    end
+    ThreadRunning = false
+end
+
+local Processing = false
+
+local function Add(Cake)
+
+    repeat
+        task.wait()
+    until not Processing
+
+    Processing = true
+
+    table.insert(Que,Cake)
+    
+    if not IsQueEmpty() and not ThreadRunning then
+        task.spawn(EmptyQue)
     end
 
-    return self
+    Processing = false
+
 end
 
---Methods
-function OrderDisplayer:AddInList(model)
-    table.insert(self.CakeList,model)
-end
-
-function OrderDisplayer:RemoveInList(model)
-    local CakeIndex = table.find(self.CakeList,model)
-    table.remove(self.CakeList,CakeIndex)
-    return GetFromDisplay(GetDisplay(self.Model,CakeIndex))
-end
-
-function OrderDisplayer:RefreshDisplays()
-    print(self.CakeList)
-    table.foreach(self.CakeList,function(index,cake)
-        Display(GetDisplay(self.Model,index),cake)
-    end)
-end
+local Connection = DisplayerFolder.ChildAdded:Connect(Add)
 
 return OrderDisplayer
