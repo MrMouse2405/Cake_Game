@@ -415,12 +415,13 @@ function Machines.Selector(prompt : ProximityPrompt)
 
         local FlavourIndex, ChosenFlavour = SelectorTable[SelectorName]:ChangeFlavour(Player)
 
-        --[[
-                string.format(
-                    Messages[SelectorName.."Selected"],
-                    ChosenFlavour
-                ),
-        ]]
+        Player:Notify(
+            "Notify", -- Key
+            string.format(
+                Messages[SelectorName.."Selected"],
+                ChosenFlavour
+            )
+        )
 
         Player:Notify(
             "Selector", -- Key

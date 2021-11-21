@@ -62,7 +62,7 @@ function MachineController:Init()
         end
     end
 
-    getGameStructure = nil
+   getGameStructure = nil
 
 end
 

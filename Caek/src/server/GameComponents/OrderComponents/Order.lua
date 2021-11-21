@@ -139,7 +139,7 @@ function OrderSystem:GetCakeFromOrderSheet(OrderSheet)
     --Cake Toppings
     cake:ApplyCakeToppings(OrderSheet.CakeToppings)
     
-    return cake
+    return cake:GetModel()
 end
 
 function OrderSystem:GetClientEncodedData(OrderSheet)

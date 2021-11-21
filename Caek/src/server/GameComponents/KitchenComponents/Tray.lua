@@ -48,5 +48,11 @@ function Tray:IsEquipped()
     return not self.Tray.Parent:IsA("Backpack")
 end
 
+function Tray:Delete()
+    self:GetTool():Destroy()
+    setmetatable(self,{__mode = "kv"})
+    self = nil
+end
+
 
 return Tray
