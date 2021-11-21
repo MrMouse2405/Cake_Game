@@ -37,7 +37,7 @@ local NetworkModule
 --Constructor
 function Player.new(plr)
     
-    local self = {} 
+    local self = {}
     setmetatable(self,Player)
 
     self.plr         = plr
@@ -60,6 +60,9 @@ function Player.new(plr)
     self.IcingColour          = "Vanilla"
     self.IcingToppingsFlavour = "Vanilla"
 
+    --// Score
+    self.Score = 0
+
     --//Basic Setup
     self.Client.Parent = plr:FindFirstChild("PlayerGui")
 
@@ -71,6 +74,11 @@ end
 --To directly get player
 Player.__call = function(player)
     return player.plr
+end
+
+-- Score / Points
+function Player:IncrementScore()
+    self.Score = self.Score + 5
 end
 
 --Order
@@ -126,17 +134,6 @@ end
 --Display Cake
 function Player:AddDisplayCake(Cake)
     self.DisplayCake = Cake
-end
-
---Cake Data
-function Player:DisplayCakeDetails(Str)
-    NetworkModule.postMessage(self(),"Cake",Str)
-    print(Str)
-end
-
---Guis
-function Player:AddGui(gui)
-    table.insert(self.CakeGUIs,gui)
 end
 
 --Notification

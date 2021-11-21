@@ -34,7 +34,7 @@ local getGameStructure = function(Machines,Model,CakeEnums)
         ["Toppings"]     = Machines.Toppings;
         ["Sprinkles"]    = Machines.Sprinkles;
         ["Selector"]     = Machines.Selector;
-     -- ["Delivery"]     = Machine.Delivery;  
+        ["Delivery"]     = Machines.Delivery;
     }
 
     --//Bases

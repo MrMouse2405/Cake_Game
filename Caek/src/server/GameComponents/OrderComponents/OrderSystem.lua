@@ -40,9 +40,9 @@ end
 local function RemoveOrder()
     local order = OrderList[Orders]
     table.remove(OrderList,Orders)
-    Orders = Orders - 1
     local Data = OrderSystem:GetClientEncodedData(order)
-    return Data
+    Orders = Orders - 1
+    return Data,Orders+1
 end
 
 local function ReconcileOrderList()
@@ -60,7 +60,7 @@ OrderSystem.__index = OrderSystem
 
 --Constructor
 function OrderSystem.new(displayer)
-    
+
     local self = {}
     setmetatable(self,OrderSystem)
 

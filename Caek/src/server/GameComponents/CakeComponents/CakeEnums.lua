@@ -13,6 +13,7 @@
 ]]
 
 local CakeEnums = {}
+local n = {}
 local Storage   = game:GetService("ReplicatedStorage"):FindFirstChild("Storage")
 
 --//Base
@@ -22,23 +23,32 @@ CakeEnums.IcingToppings = {}
 CakeEnums.Sprinkles     = {}
 CakeEnums.CakeToppings  = {}
 
+n.Bases        = {}
+n.Icings        = {}
+n.IcingToppings = {}
+n.Sprinkles     = {}
+n.CakeToppings  = {}
+
 
 --//Referencing
-table.foreach(CakeEnums,function(index,Table)
+for index, Table in pairs(CakeEnums) do
 	table.foreach(Storage[index]:GetChildren(),function(_,model)
         Table[model.Name] = model
+		table.insert(n[index],model.Name)
 	end)
-end)
+end
 
-table.foreach(CakeEnums.Sprinkles,function(index)
+for index,_ in pairs(CakeEnums.Sprinkles) do
 	CakeEnums.Sprinkles[index] = {}
-	table.foreach(Storage.Sprinkles[index]:GetChildren(),function(_,child)
+	n.Sprinkles[index] = {}
+	for _,child in pairs(Storage.Sprinkles[index]:GetChildren()) do
 		CakeEnums.Sprinkles[index][child.Name] = child
-	end)
-end)
+	table.insert(n.Sprinkles[index],child.Name)
+	end
+end
 
 --//Base Flavours
-	CakeEnums.BaseFlavours = {
+CakeEnums.BaseFlavours = {
 	["Chocolate"   ] =  Color3.fromRGB(98,52,18);
 	["Vanilla"     ] =  Color3.fromRGB(243, 229, 171);
 	["Strawberry"  ] =  Color3.fromRGB(252, 146, 215);
@@ -63,6 +73,13 @@ CakeEnums.IcingColour = {
 	["Lemon"       ] =  Color3.fromRGB(255, 245, 151);
 }
 
+n.BaseFlavours = {}
+n.IcingColour  = {}
+for Index,_ in pairs(CakeEnums.BaseFlavours) do
+	table.insert(n.BaseFlavours,Index)
+end
 
+n.IcingColour = n.BaseFlavours
+CakeEnums.n = n
 
 return CakeEnums
