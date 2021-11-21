@@ -32,20 +32,6 @@ local function getn(Table)
 
 end
 
---//Find the element at provided index in number 
-local function findn(Table, number)
-    
-    local count = 1
-
-    for _,x in pairs(Table) do
-        if count == number then
-            return x
-        end
-        count += 1;
-    end
-
-end
-
 local function findi(Table, value)
     for x,_ in pairs(Table) do
         if Table[x] == value then
@@ -84,6 +70,21 @@ local OrderSheet = {
     Cake                 = nil;
 }
 
+local n = CakeEnums.n
+
+print(n)
+
+local function getRand(Index)
+    print(getn(CakeEnums[Index]))
+    local num = math.random(1,getn(CakeEnums[Index]))
+    local x = n[Index][num]
+    print(num)
+    print(x)
+    print(CakeEnums[Index])
+    print(CakeEnums[Index][x])
+    return CakeEnums[Index][x]
+end
+
 --Methods
 function OrderSystem:CreateNewOrder()
     
@@ -95,18 +96,21 @@ function OrderSystem:CreateNewOrder()
     --Adding random ingredients
     
     --Base,Icing And icing toppings are always same
-    NewOrder.Base          = findn(CakeEnums.Bases,math.random(1, getn(CakeEnums.Bases))) 
+    NewOrder.Base          = getRand("Bases")
     NewOrder.Icing         = CakeEnums.Icings[NewOrder.Base.Name]
     NewOrder.IcingToppings = CakeEnums.IcingToppings[NewOrder.Base.Name]
     
     --Flavours can be randomized, base flavour and icing toppings flavour use same colour codes
-    NewOrder.BaseFlavour          = findi(CakeEnums.BaseFlavours,findn(CakeEnums.BaseFlavours, math.random(1,getn(CakeEnums.BaseFlavours))))
-    NewOrder.IcingColour          = findi(CakeEnums.IcingColour,findn(CakeEnums.IcingColour,  math.random(1,getn(CakeEnums.IcingColour ))))
-    NewOrder.IcingToppingsFlavour = findi(CakeEnums.BaseFlavours,findn(CakeEnums.BaseFlavours, math.random(1,getn(CakeEnums.BaseFlavours))))
+    NewOrder.BaseFlavour          = getRand("BaseFlavours")
+    NewOrder.IcingColour          = getRand("IcingColour")
+    NewOrder.IcingToppingsFlavour = getRand("BaseFlavours")
+
+
+    local Sprinkles = CakeEnums.Sprinkles[NewOrder.Base.Name]
 
     --Sprinkles and CakeToppings can be randomized
-    NewOrder.Sprinkles    = findn(CakeEnums.Sprinkles[NewOrder.Base.Name],math.random(1,getn(CakeEnums.Sprinkles[NewOrder.Base.Name])))
-    NewOrder.CakeToppings = findn(CakeEnums.CakeToppings,math.random(1,getn(CakeEnums.CakeToppings)))
+    NewOrder.Sprinkles    = Sprinkles[n.Sprinkles[NewOrder.Base.Name][math.random(1,getn(Sprinkles))]]
+    NewOrder.CakeToppings = getRand("CakeToppings")
 
     --Drop off location
     NewOrder.DropOff = math.random(1,10)
@@ -123,15 +127,15 @@ function OrderSystem:GetCakeFromOrderSheet(OrderSheet)
     
     --Base
     cake:ApplyBase(OrderSheet.Base)
-    cake:ApplyBaseFlavour(CakeEnums.BaseFlavours[OrderSheet.BaseFlavour])
+    cake:ApplyBaseFlavour(OrderSheet.BaseFlavour)
 
     --Icing
     cake:ApplyIcing(OrderSheet.Icing)
-    cake:ApplyIcingColour(CakeEnums.IcingColour[OrderSheet.IcingColour])
+    cake:ApplyIcingColour(OrderSheet.IcingColour)
     
     --IcingToppings
     cake:ApplyIcingToppings(OrderSheet.IcingToppings)
-    cake:ApplyIcingToppingsFlavour(CakeEnums.BaseFlavours[OrderSheet.IcingToppingsFlavour])
+    cake:ApplyIcingToppingsFlavour(OrderSheet.IcingToppingsFlavour)
     
     --Sprinkles
     cake:ApplySprinkles(OrderSheet.Sprinkles)
@@ -145,12 +149,12 @@ end
 function OrderSystem:GetClientEncodedData(OrderSheet)
     return {
         OrderSheet.Base.Name,            -- Base [1]
-        OrderSheet.BaseFlavour,          -- Base Flavour [2]
-        OrderSheet.IcingColour,          -- Icing Colour [3]
-        OrderSheet.Sprinkles.Name,       -- Sprinkles [4]
-        OrderSheet.IcingToppingsFlavour, -- IcingToppingsFlavour [5]
+        getIndexName(CakeEnums.BaseFlavours,OrderSheet.BaseFlavour),          -- Base Flavour [2]
+        getIndexName(CakeEnums.IcingColour,OrderSheet.IcingColour),          -- Icing Colour [3]
+        OrderSheet.Sprinkles.Name,                                     -- Sprinkles [4]
+        getIndexName(CakeEnums.BaseFlavours,OrderSheet.BaseFlavour),   -- IcingToppingsFlavour [5]
         OrderSheet.CakeToppings.Name,    -- Cake Toppings [6]
-        "N/A"                            -- Delivery [7]  
+        tostring(OrderSheet.DropOff)        -- Delivery [7]
     }
 end
 

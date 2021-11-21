@@ -18,6 +18,10 @@ local CakeUI  = game.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild(
 local Details = CakeUI:WaitForChild("Details")
 local Notifier = CakeUI:WaitForChild("Notifier")
 
+local NormalColour  = Color3.new(255,255,255)
+local CorrectColour = Color3.new(0,255,0)
+local WrongColour   = Color3.new(49,49,49)
+
 -- Selectors --------------------------------
 local Selectors = game:GetService("CollectionService"):GetTagged("Caek")[1]:FindFirstChild("Selector")
 
@@ -149,6 +153,24 @@ end)
 -- Cake Displayer ------------------------------
 NetworkService:BindToServerMessage("Cake",function(Data)
 end)
+
+-- Removing Orders ------------------------------------
+NetworkService:BindToServerMessage("Remove",function(Data)
+    OrderDisplayer.Remove(Data)
+end)
+
+-- Dispalying if correct or wrong, when player chooses an option
+for _,x in pairs(UIs) do
+    NetworkService:BindToServerMessage(x,function(Data)
+        Details:WaitForChild(x).BackgroundColor3 = (function()
+            if Data then
+                return CorrectColour
+            end
+            return WrongColour
+        end)()
+    end)
+end
+
 
 return function()
 

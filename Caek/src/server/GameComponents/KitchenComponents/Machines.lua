@@ -69,8 +69,10 @@ function Machines.Order(prompt : ProximityPrompt)
         end
 
         --//TODO: Give Player an order
-        Player:GiveOrder(OrderSystem:GetOrder())
+        local OrderData,OrderNumber = OrderSystem:GetOrder()
+        Player:GiveOrder(OrderData)
         Player:Notify("Notify",Messages.OrderRecieved)
+        PlayerManager:NotfiyAll("Remove",OrderNumber)
     end))
 
 end
@@ -429,6 +431,55 @@ function Machines.Selector(prompt : ProximityPrompt)
         )
 
         
+    end))
+
+end
+
+-- Finally, delivery
+function Machines.Delivery(prompt : ProximityPrompt)
+    
+    table.insert(Events,prompt.Triggered:Connect(function(Player)
+        
+        if not PlayerExist(Player) then
+            return
+        end
+
+        Player = PlayerManager:FindPlayer(Player)
+
+        if not Player:HasCake() then
+            Player:Notify("Notify",Messages.NoCakeError)
+            return
+        end
+ 
+        
+        if not Player:GetCake():HasBase() then
+            Player:Notify("Notify",Messages.NoCakeBaseError)
+            return
+        end
+        
+        if not Player:GetTray():IsEquipped() then
+            Player:Notify("Notify",Messages.TrayUnequippedError)
+            return
+        end
+
+        if Player:GetCake():CanApplyIcing() then
+            Player:Notify("Notify",Messages.NoIcingError)
+            return
+        end
+
+        
+        if not Player:GetTray():IsEquipped() then
+            Player:Notify("Notify",Messages.TrayUnequippedError)
+            return
+        end
+
+        if not Player:GetCake():CanApplyCakeToppings() then
+            Player:Notify("Notify",Messages.NoToppingsError)
+            return
+        end
+
+        print("Triggered lmao")
+
     end))
 
 end

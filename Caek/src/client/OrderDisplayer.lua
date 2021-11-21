@@ -103,6 +103,16 @@ local function Add(Cake)
 
 end
 
-local Connection = DisplayerFolder.ChildAdded:Connect(Add)
+function OrderDisplayer.Remove(num)
+    for _,x in pairs(UIs[tonumber(num)].ViewportFrame.WorldModel:GetChildren()) do
+        x:Destroy()
+    end
+end
+
+DisplayerFolder.ChildAdded:Connect(Add)
+
+for _,x in pairs(DisplayerFolder:GetChildren()) do
+    AddToDisplayer(x)
+end
 
 return OrderDisplayer

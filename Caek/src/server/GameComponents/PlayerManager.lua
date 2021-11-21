@@ -62,4 +62,12 @@ function PlayerManager:GetAllPlayers()
     return self.Players
 end
 
+function PlayerManager:NotfiyAll(Key,Data)
+    for _,x in pairs(self.Players) do
+        task.spawn(function()
+            x:Notify(Key,Data)
+        end)
+    end
+end
+
 return PlayerManager
