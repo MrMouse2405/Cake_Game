@@ -72,16 +72,9 @@ local OrderSheet = {
 
 local n = CakeEnums.n
 
-print(n)
-
 local function getRand(Index)
-    print(getn(CakeEnums[Index]))
     local num = math.random(1,getn(CakeEnums[Index]))
     local x = n[Index][num]
-    print(num)
-    print(x)
-    print(CakeEnums[Index])
-    print(CakeEnums[Index][x])
     return CakeEnums[Index][x]
 end
 
@@ -142,8 +135,12 @@ function OrderSystem:GetCakeFromOrderSheet(OrderSheet)
 
     --Cake Toppings
     cake:ApplyCakeToppings(OrderSheet.CakeToppings)
+
+    local Model = cake:GetModel()
+    setmetatable(cake,{__mode = "kv"})
+    cake = nil
     
-    return cake:GetModel()
+    return Model
 end
 
 function OrderSystem:GetClientEncodedData(OrderSheet)
@@ -152,7 +149,7 @@ function OrderSystem:GetClientEncodedData(OrderSheet)
         getIndexName(CakeEnums.BaseFlavours,OrderSheet.BaseFlavour),          -- Base Flavour [2]
         getIndexName(CakeEnums.IcingColour,OrderSheet.IcingColour),          -- Icing Colour [3]
         OrderSheet.Sprinkles.Name,                                     -- Sprinkles [4]
-        getIndexName(CakeEnums.BaseFlavours,OrderSheet.BaseFlavour),   -- IcingToppingsFlavour [5]
+        getIndexName(CakeEnums.BaseFlavours,OrderSheet.IcingToppingsFlavour),   -- IcingToppingsFlavour [5]
         OrderSheet.CakeToppings.Name,    -- Cake Toppings [6]
         tostring(OrderSheet.DropOff)        -- Delivery [7]
     }

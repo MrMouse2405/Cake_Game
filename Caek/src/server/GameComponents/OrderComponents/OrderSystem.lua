@@ -25,7 +25,7 @@ local function AddNewOrder(order)
     repeat
         task.wait(1)
     until not Processing
-
+    
     Processing = true
 
     Orders = Orders + 1
@@ -42,12 +42,16 @@ local function RemoveOrder()
     table.remove(OrderList,Orders)
     local Data = OrderSystem:GetClientEncodedData(order)
     Orders = Orders - 1
+    print(Orders)
     return Data,Orders+1
 end
 
 local function ReconcileOrderList()
     while task.wait(math.random(0,10)) do
-        if Orders == 8 then return end
+        
+        if Orders == 8 then
+            continue
+        end
         math.randomseed(tick())
         AddNewOrder(OrderSystem:CreateNewOrder())
         task.wait(5)
