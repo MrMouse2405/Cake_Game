@@ -130,14 +130,14 @@ local function ApplySprinkles(self,Sprinkles)
     --//Sizing
     Sprinkles.Size = Vector3.new(
         self().Size.X,
-        Sprinkles.Size.Y,
+        Sprinkles.Size.Y/2,
         self().Size.Z
     )
 
     --//Positioning
     Sprinkles.CFrame = self().CFrame + Vector3.new(
         0,
-        (self().Size.Y/2 ),
+        self().Size.Y/2 - 0.1,
         0
     )
 

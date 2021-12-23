@@ -41,14 +41,17 @@ function PlayerManager:AddPlayer(Player)
     self.Players[Player()] = Player
 
     --If Player Dies, player is removed, player would need to start over the game
-    self.Events[Player()] = Player().Character:FindFirstChild("Humanoid").Died:Connect(function()
-        self.Events[Player()]:Disconnect()
-        Player:Delete()
+    self.Events[Player()] = Player().CharacterAdded:Connect(function()
+        Player:Notify("SilentReset","")
+        Player:SilentReset()
     end)
+
+
 end
 
 function PlayerManager:RemovePlayer(Player)
     if self.Players[Player] then
+        self.Events[Player()]:Disconnect()
         self.Players[Player]:Delete()
         self.Players[Player] = nil
         if self.Events[Player] then

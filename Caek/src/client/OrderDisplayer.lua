@@ -14,7 +14,6 @@ local UIs = {}
 local Que = {}
 local ThreadRunning = false
 local Size = 0
-local LastOccupied = 0
 
 -- Folder For Cakes
 local DisplayerFolder = game:GetService("ReplicatedStorage"):WaitForChild("DisplayerFolder")
@@ -33,6 +32,7 @@ do
         
         local SUI = Instance.new("SurfaceGui")
         SUI.Face  = Enum.NormalId.Right
+        SUI.ResetOnSpawn = false
         
         local VUI = Instance.new("ViewportFrame",SUI)
         VUI.BackgroundColor3 = Color3.fromRGB(71, 64, 65)
@@ -107,6 +107,10 @@ function OrderDisplayer.Remove(num)
     for _,x in pairs(UIs[tonumber(num)].ViewportFrame.WorldModel:GetChildren()) do
         x:Destroy()
     end
+end
+
+for _,x in pairs(DisplayerFolder:GetChildren()) do
+    Add(x)
 end
 
 DisplayerFolder.ChildAdded:Connect(Add)

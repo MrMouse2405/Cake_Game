@@ -16,11 +16,12 @@ local OrderDisplayer = require(script.Parent:FindFirstChild("OrderDisplayer"))
 -- CakeUI
 local CakeUI  = game.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("CakeClient")
 local Details = CakeUI:WaitForChild("Details")
+local Score   = CakeUI:WaitForChild("Score")
 local Notifier = CakeUI:WaitForChild("Notifier")
 
-local NormalColour  = Color3.new(255,255,255)
-local CorrectColour = Color3.new(0,255,0)
-local WrongColour   = Color3.new(49,49,49)
+local NormalColour  = Color3.fromRGB(255,255,255)
+local CorrectColour = Color3.fromRGB(0,255,0)
+local WrongColour   = Color3.fromRGB(164, 28, 28)
 
 -- Selectors --------------------------------
 local Selectors = game:GetService("CollectionService"):GetTagged("Caek")[1]:FindFirstChild("Selector")
@@ -162,15 +163,49 @@ end)
 -- Dispalying if correct or wrong, when player chooses an option
 for _,x in pairs(UIs) do
     NetworkService:BindToServerMessage(x,function(Data)
-        Details:WaitForChild(x).BackgroundColor3 = (function()
+        
+        local Color = (function()
             if Data then
                 return CorrectColour
             end
             return WrongColour
         end)()
+        
+        Details:WaitForChild(x).TextColor3 = Color 
+        local ScoreUI = Score:WaitForChild(x)
+        ScoreUI.TextColor3 = Color
+        ScoreUI.Text = (function()
+            if Data then
+                return "+10"
+            else
+                return "+0"
+            end
+        end)()
+
     end)
 end
 
+-- Reseting Order
+NetworkService:BindToServerMessage("Reset",function(Data)
+    for _,x in pairs(UIs) do
+        x = Details:WaitForChild(x) 
+        x.TextColor3 = NormalColour
+        x.Text = "---"
+    end
+end)
+
+-- Silent Reset, keeps the order, removes the progress
+NetworkService:BindToServerMessage("SilentReset",function(Data)
+    for _,x in pairs(UIs) do
+        x = Details:WaitForChild(x)
+        x.TextColor3 = NormalColour
+    end
+end)
+
+NetworkService:BindToServerMessage("ShowScore",function(Data)
+    Score:WaitForChild("Total").Text = "+"..Data
+    Score.Visible = true
+end)
 
 return function()
 

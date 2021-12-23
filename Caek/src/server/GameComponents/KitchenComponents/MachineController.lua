@@ -63,7 +63,7 @@ function MachineController:Init()
     end
 
    getGameStructure = nil
-
+   
 end
 
 function MachineController:SetUpProximityPrompts(prompt)
